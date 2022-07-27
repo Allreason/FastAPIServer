@@ -1,1 +1,1 @@
-curl http://114.132.248.40:7891/script/script.sh | sh
+curl https://raw.githubusercontent.com/Allreason/FastAPIServer/main/script.sh | sh
