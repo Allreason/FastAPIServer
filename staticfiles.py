@@ -1,9 +1,10 @@
 from fastapi.staticfiles import StaticFiles
-from fastapi import FastAPI,UploadFile
+from fastapi import FastAPI,UploadFile,Request,Form
 import re
 import os
 import readfile
-
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -46,6 +47,11 @@ async def receive_file2(file: UploadFile):
         f.write(content)
     return f"http://114.132.248.40:8888/archive/{filename}"
 
+@app.post("/postform/")
+async def postform(text: str = Form()):
+    
+    return text
+
 @app.get("/getsql/")
 async def get_sql(title:str=''):
     m = readfile.sql2dict('sql.md')
@@ -57,3 +63,9 @@ async def get_sql(title:str=''):
     else:
         return m
     # return {'sql':d,'title':title}
+
+templates = Jinja2Templates(directory="templates")
+
+@app.get("/sendsql/",response_class=HTMLResponse)
+async def sendsql(request: Request):
+    return templates.TemplateResponse("sql.html",{"request": request,"sql":readfile.directlyread('sql.md')})

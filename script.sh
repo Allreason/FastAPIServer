@@ -6,6 +6,7 @@ if [ $# -eq 0 ]
 then
     echo "No arguments supplied"
     title='notitle'
+    folder='archive'
 else
     title=$1
 fi
@@ -37,5 +38,5 @@ then
     filename=${filename}.tar.gz
 fi
 
-path=`curl http://114.132.248.40:7891/uploadfile/archive -F "file=@${filename}"`
+path=`curl http://114.132.248.40:7891/uploadfile/20220808 -F "file=@${filename}"`
 echo $path

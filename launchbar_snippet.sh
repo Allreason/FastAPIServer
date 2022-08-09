@@ -1,1 +1,1 @@
-curl https://raw.githubusercontent.com/Allreason/FastAPIServer/main/script.sh | sh
+curl https://raw.githubusercontent.com/Allreason/FastAPIServer/main/script.sh | sh -s 2022-07-28

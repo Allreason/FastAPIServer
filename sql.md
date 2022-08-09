@@ -1,4 +1,40 @@
 set hive.cli.print.header=true;
+select a.sn, b.buildversion 
+from ods_sdx_safe.tmp_sn2 a 
+left join ods_sdx_safe.ods_sdx_dev_zip b 
+on b.subregion = current_date() 
+and b.tenantcode = '1027' 
+and a.sn =  b.sn;
+# j
+select sn,totalmemory-(applicationoccurpymemory+otheroccurpymemory+systemoccurpymemory) as remaining_memory_space
+from dwd_sdx_safe.dwd_sdx_dev_zip
+where subregion=date_sub(current_date(),0)
+and tenantcode in ('1010')
+and totalmemory-(applicationoccurpymemory+otheroccurpymemory+systemoccurpymemory)<=800
+# 2022-08-05-2
+select sn,packagename,versioncode,sendtimestamp
+from ods_sdx_safe.ods_sdx_app_installed_zip
+where subregion=date_sub(current_date(),0)
+and packagename='com.nes.skywayclient'
+and tenantcode=1027
+and versioncode='2022042811';
+
+# 2022-08-05
+select sn,packagename,versioncode,sendtimestamp
+from ods_sdx_safe.ods_sdx_app_installed_zip
+where subregion=date_sub(current_date(),0)
+and packagename='com.nes.coreservice'
+and tenantcode=1027
+and versioncode='202206142';
+# 2022-07-27
+select count(*),versionname
+from ods_sdx_safe.ods_sdx_app_installed_zip
+where subregion=date_sub(current_date(),0)
+and packagename='de.exaring.waipu'
+and tenantcode=1018
+group by versionname
+# 2022-07-26
+set hive.cli.print.header=true;
 select me.*,bui.buildversion,case when dev.sn is NULL then 'offline' else 'online' end
 from
 (

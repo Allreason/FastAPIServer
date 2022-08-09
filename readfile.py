@@ -33,6 +33,16 @@ def sql2dict(filepath):
                 mapping['notitle']=i
     return mapping
 
+def directlyread(filepath):
+    with open(filepath,'r') as f:
+        # l = f.read().split('\n')
+        # return ''.join(l)
+        return f.read()
+
+def prepend_sql(filepath,str):
+    with open(filepath,'a') as f:
+        f.read()
+
 out = sql2dict('sql.md')
 # print('not' in out)
 
