@@ -3,13 +3,21 @@
     <title>Title of the document</title>
   </head>
   <body>
-    <span style="white-space: pre-line">
-        {{sql}}
-    </span>
+
     <form action="/postform/" method="POST">
       <textarea rows="5" cols="60" name="text" placeholder="Prepend SQL"></textarea>
       <br/>
       <input type="submit" value="submit"/>
     </form>
+    <!-- white-space: pre-line; -->
+    <span style="font-family:  Geneva, Verdana, sans-serif">
+        {% for i in sql %}
+        {% if '#' is in(i) %}
+            <h2 style="color:rgba(0, 0, 255, 0.47)">{{i}}</h2>
+        {% else %}
+            {{i}}<br>
+        {% endif %}
+        {% endfor %}
+    </span>
   </body>
 </html>

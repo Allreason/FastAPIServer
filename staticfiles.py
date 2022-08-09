@@ -50,7 +50,7 @@ async def receive_file2(file: UploadFile):
 @app.post("/postform/")
 async def postform(text: str = Form()):
     
-    return text
+    return readfile.prepend_sql('sql.md',text)
 
 @app.get("/getsql/")
 async def get_sql(title:str=''):
