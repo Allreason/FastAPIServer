@@ -1,5 +1,6 @@
 import re
 import datetime
+import subprocess
 
 def sql2list(filepath):
     ret = []
@@ -60,6 +61,11 @@ def prepend_sql(filepath,str):
         f.write(concated)
     return str
 
+async def substitute_sql(filepath,str):
+    ct = datetime.datetime.now().isoformat()
+    with subprocess.Popen(['mv',filepath,f'{filepath}{ct}'],stdout=subprocess.PIPE):
+        with open(filepath,'w') as f:
+            f.write(str)
 
 out = sql2dict('sql.md')
 # print('not' in out)

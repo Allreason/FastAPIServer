@@ -5,11 +5,13 @@ filename="${today}.csv"
 if [ $# -eq 0 ]
 then
     echo "No arguments supplied"
-    title='notitle'
-    folder='archive'
+    title=`curl http://114.132.248.40:7891/getsql/?isgettitle=1`
+    # maybe null.
 else
     title=$1
 fi
+
+echo $title
 
 k=`curl http://114.132.248.40:7891/getsql/?title=${title}`
 printf "$k"
@@ -38,5 +40,7 @@ then
     filename=${filename}.tar.gz
 fi
 
-path=`curl http://114.132.248.40:7891/uploadfile/20220808 -F "file=@${filename}"`
+
+
+path=`curl http://114.132.248.40:7891/uploadfile/archive -F "file=@${filename}"`
 echo $path

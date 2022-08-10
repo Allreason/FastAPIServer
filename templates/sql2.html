@@ -1,0 +1,149 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Untitled Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        textarea {
+            border: 1px solid #DADADA;
+            color: rgb(0, 0, 0);
+            height: 200px;
+            margin-bottom: 20px;
+            outline: 0 none;
+            padding: 3px 1px 3px 5px;
+            width: 100%;
+            font-size: 16px;
+            font-family: Tahoma, sans-serif;
+            line-height: normal;
+            box-shadow: inset 0px 1px 4px #ECECEC;
+            -moz-box-shadow: inset 0px 1px 4px #ECECEC;
+            -webkit-box-shadow: inset 0px 1px 4px #ECECEC;
+
+        }
+
+        .container {
+
+            width: 100%;
+            align-content: center;
+            justify-content: center;
+            display: flex;
+            padding: 0 5px;
+            box-sizing: border-box;
+
+        }
+
+        .container>div {
+            width: 50%;
+            padding: 5px;
+        }
+
+
+        .substitute,
+        .append {
+            height: 40px;
+            width: 100%;
+            background-color: #33b3e5;
+            outline: 0 none;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <p>curl https://raw.githubusercontent.com/Allreason/FastAPIServer/main/script.sh | sh</p>
+
+
+    <div class="container">
+        <div>
+            <textarea id="message1" placeholder="Append SQL"></textarea>
+            <button class="append">
+                append
+            </button>
+        </div>
+        <div>
+            <textarea id="message2" placeholder="">{% for i in sql %}
+{{i}}{% endfor %}</textarea>
+            <button class="substitute">
+                substitute
+            </button>
+        </div>
+    </div>
+
+    <!-- <table>
+        <tr>
+            <td>
+
+            </td>
+            <td>
+                <div class="container">
+                    <textarea id="message" placeholder="">{% for i in sql %}
+            {{i}}{% endfor %}
+                </textarea>
+                    <button class="substitute">
+                        substitute
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </table> -->
+
+    <!-- <div class="container">
+    <textarea id="message" placeholder="">{% for i in sql %}
+{{i}}{% endfor %}
+    </textarea>
+    <table>
+        <tr>
+            <td>    
+                <button class="substitute">
+                substitute
+            </button>
+        </td>
+            <td>
+                <button class="append">
+                    append
+                </button>
+            </td>
+        </tr>
+    </table>
+</div> -->
+
+
+    <span style="font-family:  Geneva, Verdana, sans-serif">
+        {% for i in sql %}
+        {% if '#' is in(i) %}
+        <h2 style="color:rgba(0, 0, 255, 0.47)">{{i}}</h2>
+        {% else %}
+        {{i}}<br>
+        {% endif %}
+        {% endfor %}
+    </span>
+</body>
+<script src="{{ url_for('script', path='jquery-3.6.0.min.js') }}"></script>
+<script>
+    $('.append').click(() => {
+        const message = $('#message1').val()
+        if (!message) return
+        $.post('http://114.132.248.40:7891/postform/', { text: message, type: 'append' }, function (result) {
+            console.log('data', result)
+            location.reload()
+        })
+    })
+    $('.substitute').click(() => {
+        console.log('clicked substitute')
+        const message = $('#message2').val()
+        if (!message) return
+        $.post('http://114.132.248.40:7891/postform/', { text: message, type: 'substitute' }, function (result) {
+            console.log('data', result)
+            location.reload()
+        })
+    })
+</script>
+
+</html>

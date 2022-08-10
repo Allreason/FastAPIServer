@@ -1,7 +1,5 @@
-jfk
-# before 2022-08-09T14:12:01.871425
-select * from
-ods_sdx_safe.ods_sdx_metadata
+# aaa create_folder
+select current_date();
 # before 2022-08-09T14:05:21.966983
 set hive.cli.print.header=true;
 select a.sn, b.buildversion 
