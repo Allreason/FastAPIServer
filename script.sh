@@ -1,6 +1,6 @@
 #!/bin/bash
 today=`date +%Y%m%d-%H.%M`
-filename="${today}.csv"
+
 
 if [ $# -eq 0 ]
 then
@@ -10,8 +10,9 @@ then
 else
     title=$1
 fi
-
+title=${title//\"/}
 echo $title
+filename="${title}${today}.csv"
 
 k=`curl http://114.132.248.40:7891/getsql/?title=${title}`
 printf "$k"

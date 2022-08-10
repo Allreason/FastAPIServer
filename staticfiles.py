@@ -13,7 +13,7 @@ app.mount("/script", StaticFiles(directory="."), name="script")
 
 @app.post("/uploadfile/")
 async def receive_file(file: UploadFile):
-    batepath="/home/lighthouse/pokemon/"
+    basepath="/home/lighthouse/pokemon/"
     filename = file.filename
     print(filename)
     tenant = re.search(r'(^\d+)_',filename)
@@ -21,8 +21,8 @@ async def receive_file(file: UploadFile):
     if tenant:
         tenant=tenant.group(1)
         print(tenant)
-        if not os.path.isdir(f"{batepath}{tenant}"):
-            os.mkdir(f"{batepath}{tenant}")
+        if not os.path.isdir(f"{basepath}{tenant}"):
+            os.mkdir(f"{basepath}{tenant}")
     else:
         tenant=''
 
@@ -31,21 +31,30 @@ async def receive_file(file: UploadFile):
         dirt=tenant+'/'
 
 
-    with open(f"{batepath}{dirt}{filename}",'wb') as f:
+    with open(f"{basepath}{dirt}{filename}",'wb') as f:
         content = await file.read()
         f.write(content)
     return f"http://114.132.248.40:8888/{dirt}{filename}"
 
 @app.post("/uploadfile/archive")
 async def receive_file2(file: UploadFile):
-    batepath="/home/lighthouse/pokemon/archive/"
+    basepath="/home/lighthouse/pokemon/archive/"
     filename = file.filename
     print(filename)
+    foldername=''
+    if '-createfolder' in filename:
+        print('create a folder for it')
+        se = re.search(r'(.*?)-createfolder',filename)
+        foldername = se.group(1)
+        try:
+            os.mkdir(basepath+foldername)
+        except:
+            print('folder exists')
 
-    with open(f"{batepath}{filename}",'wb') as f:
+    with open(f"{basepath}{foldername}/{filename}",'wb') as f:
         content = await file.read()
         f.write(content)
-    return f"http://114.132.248.40:8888/archive/{filename}"
+    return f"http://114.132.248.40:8888/archive/{foldername}/{filename}"
 
 @app.post("/postform/")
 async def postform(request:Request,text: str = Form(),type:str=Form()):
@@ -54,13 +63,14 @@ async def postform(request:Request,text: str = Form(),type:str=Form()):
         return readfile.prepend_sql('sql.md',text)
     elif type=='substitute':
         u = await readfile.substitute_sql('sql.md',text)
-        return u
+        return
 
     #response=await sendsql(request)
     #return RedirectResponse('/sendsql/')
 
 @app.get("/getsql/")
 async def get_sql(title:str='',isgettitle:int=0):
+    print(str.encode(title),isgettitle)
     m = readfile.sql2dict('sql.md')
     if title=='notitle' or not title:
         # return the first one
@@ -70,13 +80,15 @@ async def get_sql(title:str='',isgettitle:int=0):
             else:
                 if i=='notitle':
                     return ''
-                return re.sub(' ','%20',i)
-    if title:
-        t = re.sub('%20',' ',title)
-        print(t)
-        print(m)
-        if t in m:
-            return m[t]
+                return i
+    elif title:
+        title=title.strip('"') 
+        if title in m:
+            print(f'########{title}')
+            if isgettitle == 0:
+                return m[title]
+            else:
+                return title
 
 
 templates = Jinja2Templates(directory="templates")

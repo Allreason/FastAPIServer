@@ -9,9 +9,14 @@
             padding: 0;
         }
 
+        .sql {
+            font-family:  Geneva, Verdana, sans-serif;
+            padding: 10px;
+        }
+
         textarea {
             border: 1px solid #DADADA;
-            color: rgb(0, 0, 0);
+            color: rgba(0, 0, 0, 0.82);
             height: 200px;
             margin-bottom: 20px;
             outline: 0 none;
@@ -53,11 +58,18 @@
             font-size: 14px;
             cursor: pointer;
         }
+        .substitute {
+
+            background-color: #ff0808;
+
+        }
+
+        
     </style>
 </head>
 
 <body>
-    <p>curl https://raw.githubusercontent.com/Allreason/FastAPIServer/main/script.sh | sh</p>
+    <p class="sql">Execute Command: <span style="background-color: #ffffff;border: 1px dashed #6599eb;">curl https://raw.githubusercontent.com/Allreason/FastAPIServer/main/script.sh | sh -s heading</heading></span></p>
 
 
     <div class="container">
@@ -115,7 +127,7 @@
 </div> -->
 
 
-    <span style="font-family:  Geneva, Verdana, sans-serif">
+    <div class="sql">
         {% for i in sql %}
         {% if '#' is in(i) %}
         <h2 style="color:rgba(0, 0, 255, 0.47)">{{i}}</h2>
@@ -123,7 +135,7 @@
         {{i}}<br>
         {% endif %}
         {% endfor %}
-    </span>
+    </div>
 </body>
 <script src="{{ url_for('script', path='jquery-3.6.0.min.js') }}"></script>
 <script>

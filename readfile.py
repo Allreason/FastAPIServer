@@ -55,7 +55,7 @@ def prepend_sql(filepath,str):
         if re.match(r'^# ',firstline):
             fl = ''
         else:
-            fl = f'# before {ct}\n'
+            fl = f'# before-{ct}\n'
         concated = str+'\n'+fl+firstline+all
         f.seek(0)
         f.write(concated)
@@ -63,7 +63,7 @@ def prepend_sql(filepath,str):
 
 async def substitute_sql(filepath,str):
     ct = datetime.datetime.now().isoformat()
-    with subprocess.Popen(['mv',filepath,f'{filepath}{ct}'],stdout=subprocess.PIPE):
+    with subprocess.Popen(f'tar -czf bk/{filepath}{ct}.tar.gz {filepath}',shell=True,stdout=subprocess.PIPE):
         with open(filepath,'w') as f:
             f.write(str)
 

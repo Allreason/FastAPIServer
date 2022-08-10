@@ -1,5 +1,7 @@
-# aaa create_folder
+# kkk-createfolder
 select current_date();
+# before-2022-08-10T10:48:04.908515
+
 # before 2022-08-09T14:05:21.966983
 set hive.cli.print.header=true;
 select a.sn, b.buildversion 
