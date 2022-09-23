@@ -12,6 +12,13 @@ else
 fi
 title=${title//\"/}
 echo $title
+
+if [ $title = "*in_list*" ]
+then
+curl http://114.132.248.40:7891/script/snlist.txt -o /home/hduser8006/snlist.csv
+echo "curl file finished"
+fi
+
 filename="${title}${today}.csv"
 
 k=`curl http://114.132.248.40:7891/getsql/?title=${title}`
