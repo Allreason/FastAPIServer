@@ -64,6 +64,11 @@ async def postform(request:Request,text: str = Form(),type:str=Form()):
     elif type=='substitute':
         u = await readfile.substitute_sql('sql.md',text)
         return
+    elif type=='snappend':
+        return readfile.prepend_sql('snlist.txt',text)
+    elif type=='snsubstitute':
+        u = await readfile.substitute_sql('snlist.txt',text)
+        return
 
     #response=await sendsql(request)
     #return RedirectResponse('/sendsql/')
@@ -96,3 +101,7 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/sendsql/",response_class=HTMLResponse)
 async def sendsql(request: Request):
     return templates.TemplateResponse("sql2.html",{"request": request,"sql":readfile.directlyread('sql.md')})
+
+@app.get("/sendsnlist/",response_class=HTMLResponse)
+async def sendsql(request: Request):
+    return templates.TemplateResponse("sn.html",{"request": request,"sql":readfile.directlyread('snlist.txt'),"filetype":"sn"})

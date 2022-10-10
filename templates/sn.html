@@ -1,0 +1,160 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Untitled Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .sql {
+            font-family:  Geneva, Verdana, sans-serif;
+            padding: 10px;
+        }
+
+        textarea {
+            border: 1px solid #DADADA;
+            color: rgba(0, 0, 0, 0.82);
+            height: 200px;
+            margin-bottom: 20px;
+            outline: 0 none;
+            padding: 3px 1px 3px 5px;
+            width: 100%;
+            font-size: 16px;
+            font-family: Tahoma, sans-serif;
+            line-height: normal;
+            box-shadow: inset 0px 1px 4px #ECECEC;
+            -moz-box-shadow: inset 0px 1px 4px #ECECEC;
+            -webkit-box-shadow: inset 0px 1px 4px #ECECEC;
+
+        }
+
+        .container {
+
+            width: 100%;
+            align-content: center;
+            justify-content: center;
+            display: flex;
+            padding: 0 5px;
+            box-sizing: border-box;
+
+        }
+
+        .container>div {
+            width: 50%;
+            padding: 5px;
+        }
+
+
+        .substitute,
+        .append {
+            height: 40px;
+            width: 100%;
+            background-color: #33b3e5;
+            outline: 0 none;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .substitute {
+
+            background-color: #ff0808;
+
+        }
+
+        
+    </style>
+</head>
+
+<body>
+    <p class="sql">说明：上面两个是文本框，用来编辑数据，下面是提交后的数据显示。<span style="background-color: #ffffff;border: 1px dashed #6599eb;">将要查询的sn数据填在这里，每行一个sn</heading></span></p>
+
+
+    <div class="container">
+        <div>
+            <textarea id="message1" placeholder="Append sn"></textarea>
+            <button class="append">
+                附加文本
+            </button>
+        </div>
+        <div>
+            <textarea id="message2" placeholder="填入要替换的内容"></textarea>
+            <button class="substitute">
+                替换当前sn列表
+            </button>
+        </div>
+    </div>
+
+    <!-- <table>
+        <tr>
+            <td>
+
+            </td>
+            <td>
+                <div class="container">
+                    <textarea id="message" placeholder="">{% for i in sql %}
+            {{i}}{% endfor %}
+                </textarea>
+                    <button class="substitute">
+                        substitute
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </table> -->
+
+    <!-- <div class="container">
+    <textarea id="message" placeholder="">{% for i in sql %}
+{{i}}{% endfor %}
+    </textarea>
+    <table>
+        <tr>
+            <td>    
+                <button class="substitute">
+                substitute
+            </button>
+        </td>
+            <td>
+                <button class="append">
+                    append
+                </button>
+            </td>
+        </tr>
+    </table>
+</div> -->
+
+<h1>当前sn列表</h1>
+    <div class="sql">
+        {% for i in sql %}
+        {% if '#' is in(i) %}
+        <h2 style="color:rgba(0, 0, 255, 0.47)">{{i}}</h2>
+        {% else %}
+        {{i}}<br>
+        {% endif %}
+        {% endfor %}
+    </div>
+</body>
+<script src="{{ url_for('script', path='jquery-3.6.0.min.js') }}"></script>
+<script>
+    $('.append').click(() => {
+        const message = $('#message1').val()
+        if (!message) return
+        $.post('http://114.132.248.40:7891/postform/', { text: message, type: 'snappend' }, function (result) {
+            console.log('data', result)
+            location.reload()
+        })
+    })
+    $('.substitute').click(() => {
+        console.log('clicked substitute')
+        const message = $('#message2').val()
+        if (!message) return
+        $.post('http://114.132.248.40:7891/postform/', { text: message, type: 'snsubstitute' }, function (result) {
+            console.log('data', result)
+            location.reload()
+        })
+    })
+</script>
+
+</html>

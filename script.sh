@@ -11,12 +11,12 @@ else
     title=$1
 fi
 title=${title//\"/}
-echo $title
+echo "title is ::::::::"$title
 
-if [ $title = "*in_list*" ]
+if [[ $title == *"in_list"* ]]
 then
 curl http://114.132.248.40:7891/script/snlist.txt -o /home/hduser8006/snlist.csv
-echo "curl file finished"
+echo "#########curl file finished##########"
 fi
 
 filename="${title}${today}.csv"
