@@ -13,7 +13,7 @@ app.mount("/script", StaticFiles(directory="."), name="script")
 
 @app.post("/uploadfile/")
 async def receive_file(file: UploadFile):
-    basepath="/home/lighthouse/pokemon/"
+    basepath="/home/sei/pokemon/"
     filename = file.filename
     print(filename)
     tenant = re.search(r'(^\d+)_',filename)
@@ -38,7 +38,7 @@ async def receive_file(file: UploadFile):
 
 @app.post("/uploadfile/archive")
 async def receive_file2(file: UploadFile):
-    basepath="/home/lighthouse/pokemon/archive/"
+    basepath="/home/sei/pokemon/archive/"
     filename = file.filename
     print(filename)
     foldername=''
