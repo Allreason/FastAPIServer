@@ -1,0 +1,113 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Untitled Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .sql {
+            font-family:  Geneva, Verdana, sans-serif;
+            padding: 10px;
+        }
+
+        textarea {
+            border: 1px solid #DADADA;
+            color: rgba(0, 0, 0, 0.82);
+            height: 200px;
+            margin-bottom: 20px;
+            outline: 0 none;
+            padding: 3px 1px 3px 5px;
+            width: 100%;
+            font-size: 16px;
+            font-family: Tahoma, sans-serif;
+            line-height: normal;
+            box-shadow: inset 0px 1px 4px #ECECEC;
+            -moz-box-shadow: inset 0px 1px 4px #ECECEC;
+            -webkit-box-shadow: inset 0px 1px 4px #ECECEC;
+
+        }
+
+        .container {
+
+            width: 100%;
+            align-content: center;
+            justify-content: center;
+            display: flex;
+            padding: 0 5px;
+            box-sizing: border-box;
+
+        }
+
+        .container>div {
+            width: 50%;
+            padding: 5px;
+        }
+
+
+        .substitute,
+        .append {
+            height: 40px;
+            width: 100%;
+            background-color: #33b3e5;
+            outline: 0 none;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .substitute {
+
+            background-color: #ff0808;
+
+        }
+        
+    </style>
+</head>
+
+<body>
+
+
+<div id="results">
+    {% if not out %}
+        <p>Content is Null</p>
+    {% else %}
+        {% if drive %}
+        <h1>On Drive: {{drive}}</h1>
+        {% else %}
+        <h1>All Contents</h1>
+        {% endif %}
+        {% for i in out %}
+            {% if i.filename %}
+            
+            <p>
+                <button class="path" style="color:rgba(0, 0, 255, 0.47);font-size:17px;margin:4px" id="{{i.filename}}&{{drive}}">{{i.filename}}</button>
+            </p>
+            {% else %}
+            
+            <p>
+            <button class="path" style="color:rgba(0, 0, 255, 0.47);font-size:17px;margin:4px" id="{{i}}&{{i}}">{{i}}</button>
+            </p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
+
+</body>
+<script src="{{ url_for('script', path='jquery-3.6.0.min.js') }}"></script>
+<script>
+    jQuery(':button').click(function () {
+        const message = this.id.split('&')[0]
+        var encodedString = btoa(message);
+        const drive=this.id.split('&')[1]
+        alert(message+drive)
+
+        location.replace('http://114.132.248.40:8877/ck/?pathstr64='+encodedString+'&drive='+drive)
+    });
+
+
+</script>
+
+</html>

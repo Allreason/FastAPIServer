@@ -5,6 +5,7 @@ import os
 import readfile
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse,RedirectResponse
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -101,10 +102,55 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/sendsql/",response_class=HTMLResponse)
 async def sendsql(request: Request):
     return templates.TemplateResponse("sql2.html",{"request": request,"sql":readfile.directlyread('sql.md')})
-<<<<<<< HEAD
 
 @app.get("/sendsnlist/",response_class=HTMLResponse)
 async def sendsql(request: Request):
     return templates.TemplateResponse("sn.html",{"request": request,"sql":readfile.directlyread('snlist.txt'),"filetype":"sn"})
-=======
->>>>>>> d7688e92b1ac4fb191523e6dc289801d224e0102
+
+
+class Path(BaseModel):
+    drive: str
+    location: str
+
+import base64
+import clickhouse
+@app.get("/ckd/",response_class=HTMLResponse)
+async def ck_depracated(request: Request,path:Path=None):
+    if not path:
+        location = None 
+    else:
+        drive = path.drive
+        location = path.location
+        print(drive,location)
+    return templates.TemplateResponse("ck.html",{"request": request,"out":clickhouse.list_all_drives(location)})
+
+@app.get("/ck/",response_class=HTMLResponse)
+async def ck(request: Request,pathstr64:str=None,drive:str=None):
+    print(drive,pathstr64)
+    location = pathstr64
+    if pathstr64 == 'popper.js.map':
+        return
+    elif pathstr64:
+        # base64 string to bytes
+        print(pathstr64)
+        print('---------------------------')
+        pathbytes64= pathstr64.encode()
+        pathbytes = base64.b64decode(pathbytes64)
+        # finally to string
+        pathstr = pathbytes.decode('utf-8')
+        location = pathstr
+        print(location) 
+
+    print(clickhouse.list_all_drives(drive,location))
+    
+    return templates.TemplateResponse("ck.html",{"request": request,"drive":drive,"out":clickhouse.list_all_drives(drive,location)})
+
+# @app.post("/jumppath/")
+# async def jumppath(request:Request,drive: str = Form(),location:str=Form()):
+#     p = Path(drive=drive,location=location)
+    
+#     # p.location = location
+#     # p.drive = drive
+#     # e = await ck(request,path=p)
+#     return RedirectResponse('/ck/', status_code=303)
+
