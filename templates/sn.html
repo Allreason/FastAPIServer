@@ -69,21 +69,20 @@
 </head>
 
 <body>
-    <p class="sql">Execute Command: <span style="background-color: #ffffff;border: 1px dashed #6599eb;">curl  http://3.134.72.111:8877/script/script.sh | sh -s heading</heading></span></p>
+    <p class="sql">说明：上面两个是文本框，用来编辑数据，下面是提交后的数据显示。<span style="background-color: #ffffff;border: 1px dashed #6599eb;">将要查询的sn数据填在这里，每行一个sn</heading></span></p>
 
 
     <div class="container">
         <div>
-            <textarea id="message1" placeholder="Append SQL"></textarea>
+            <textarea id="message1" placeholder="Append sn"></textarea>
             <button class="append">
-                append
+                附加文本
             </button>
         </div>
         <div>
-            <textarea id="message2" placeholder="">{% for i in sql %}
-{{i}}{% endfor %}</textarea>
+            <textarea id="message2" placeholder="填入要替换的内容"></textarea>
             <button class="substitute">
-                substitute
+                替换当前sn列表
             </button>
         </div>
     </div>
@@ -126,7 +125,7 @@
     </table>
 </div> -->
 
-
+<h1>当前sn列表</h1>
     <div class="sql">
         {% for i in sql %}
         {% if '#' is in(i) %}
@@ -142,7 +141,7 @@
     $('.append').click(() => {
         const message = $('#message1').val()
         if (!message) return
-        $.post('http://3.134.72.111:8877/postform/', { text: message, type: 'append' }, function (result) {
+        $.post('http://3.134.72.111:8877/postform/', { text: message, type: 'snappend' }, function (result) {
             console.log('data', result)
             location.reload()
         })
@@ -151,7 +150,7 @@
         console.log('clicked substitute')
         const message = $('#message2').val()
         if (!message) return
-        $.post('http://3.134.72.111:8877/postform/', { text: message, type: 'substitute' }, function (result) {
+        $.post('http://3.134.72.111:8877/postform/', { text: message, type: 'snsubstitute' }, function (result) {
             console.log('data', result)
             location.reload()
         })

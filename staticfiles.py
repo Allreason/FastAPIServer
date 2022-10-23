@@ -13,7 +13,7 @@ app.mount("/script", StaticFiles(directory="."), name="script")
 
 @app.post("/uploadfile/")
 async def receive_file(file: UploadFile):
-    basepath="/home/sei/pokemon/"
+    basepath="/home/sei/nginx/html/exported/"
     filename = file.filename
     print(filename)
     tenant = re.search(r'(^\d+)_',filename)
@@ -34,11 +34,11 @@ async def receive_file(file: UploadFile):
     with open(f"{basepath}{dirt}{filename}",'wb') as f:
         content = await file.read()
         f.write(content)
-    return f"http://114.132.248.40:8888/{dirt}{filename}"
+    return f"http://3.134.72.111/exported/{dirt}{filename}"
 
 @app.post("/uploadfile/archive")
 async def receive_file2(file: UploadFile):
-    basepath="/home/sei/pokemon/archive/"
+    basepath="/home/sei/nginx/html/exported/archive/"
     filename = file.filename
     print(filename)
     foldername=''
@@ -52,9 +52,15 @@ async def receive_file2(file: UploadFile):
             print('folder exists')
 
     with open(f"{basepath}{foldername}/{filename}",'wb') as f:
-        content = await file.read()
-        f.write(content)
-    return f"http://114.132.248.40:8888/archive/{foldername}/{filename}"
+        n=1
+        while True:
+            content = await file.read(1000)
+            if content == b'' or n>10000:
+                print('stop reading file')
+                break
+            f.write(content)
+            n+=1
+    return f"http://3.134.72.111/exported/archive/{foldername}/{filename}"
 
 @app.post("/postform/")
 async def postform(request:Request,text: str = Form(),type:str=Form()):
@@ -63,6 +69,11 @@ async def postform(request:Request,text: str = Form(),type:str=Form()):
         return readfile.prepend_sql('sql.md',text)
     elif type=='substitute':
         u = await readfile.substitute_sql('sql.md',text)
+        return
+    elif type=='snappend':
+        return readfile.prepend_sql('snlist.txt',text)
+    elif type=='snsubstitute':
+        u = await readfile.substitute_sql('snlist.txt',text)
         return
 
     #response=await sendsql(request)
@@ -96,3 +107,7 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/sendsql/",response_class=HTMLResponse)
 async def sendsql(request: Request):
     return templates.TemplateResponse("sql2.html",{"request": request,"sql":readfile.directlyread('sql.md')})
+
+@app.get("/sendsnlist/",response_class=HTMLResponse)
+async def sendsql(request: Request):
+    return templates.TemplateResponse("sn.html",{"request": request,"sql":readfile.directlyread('snlist.txt'),"filetype":"sn"})

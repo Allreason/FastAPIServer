@@ -1,6 +1,40 @@
+select dev.sn,dev.buildversion
+from 
+(
+select tenantcode,sn,buildversion, sendtimestamp from dwd_sdx_safe.dwd_sdx_dev_zip
+where subregion=date_sub(current_date(),1) and tenantcode = '1038'
+)dev
+inner join
+(
+select distinct sn from ods_sdx_safe.ods_sdx_app_installed_zip
+where subregion=date_sub(current_date(),1)
+and tenantcode='1038'
+and packagename='com.nes.remoteota.six'
+) as installed
+on installed.sn=dev.sn
+# 1019_in_list
+create table if not exists ads_sdx_safe.snlist(sn string);LOAD DATA LOCAL INPATH '/home/hduser8006/snlist.csv' OVERWRITE INTO TABLE ads_sdx_safe.snlist;
+set hive.cli.print.header=true;
+select dev.tenantcode,sns.*,dev.buildversion as buildversion, dev.sendtimestamp as last_time_report,
+case when dev2.sn is NULL then 'offline' else 'online' end as isonline
+from ads_sdx_safe.snlist as sns
+left join
+(
+select tenantcode,sn,buildversion, sendtimestamp from dwd_sdx_safe.dwd_sdx_dev_zip
+where subregion=date_sub(current_date(),0) and tenantcode = '1027' 
+)dev
+on dev.sn=sns.sn
+left join
+(
+select distinct tenantcode,sn from ods_sdx_safe.ods_sdx_dev
+where subregion=date_sub(current_date(),0)
+and tenantcode = '1027' and unix_timestamp(sendtimestamp)>=unix_timestamp(current_timestamp)-7200
+) dev2
+on dev.sn=dev2.sn;
+# before-2022-10-19T02:48:21.543218
 select sn,buildversion from dwd_sdx_safe.dwd_sdx_dev_zip
 where  subregion=date_sub(current_date(),0)
-and subregion=1024
+and tenantcode=1024
 # new_in_list
 create table if not exists ads_sdx_safe.snlist(sn string);LOAD DATA LOCAL INPATH '/home/hduser8006/snlist.csv' OVERWRITE INTO TABLE ads_sdx_safe.snlist;
 set hive.cli.print.header=true;
