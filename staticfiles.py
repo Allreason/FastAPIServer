@@ -13,7 +13,7 @@ app.mount("/script", StaticFiles(directory="."), name="script")
 
 @app.post("/uploadfile/")
 async def receive_file(file: UploadFile):
-    basepath="/home/lighthouse/pokemon/"
+    basepath="/home/sei/pokemon/"
     filename = file.filename
     print(filename)
     tenant = re.search(r'(^\d+)_',filename)
@@ -38,7 +38,7 @@ async def receive_file(file: UploadFile):
 
 @app.post("/uploadfile/archive")
 async def receive_file2(file: UploadFile):
-    basepath="/home/lighthouse/pokemon/archive/"
+    basepath="/home/sei/pokemon/archive/"
     filename = file.filename
     print(filename)
     foldername=''
@@ -101,7 +101,10 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/sendsql/",response_class=HTMLResponse)
 async def sendsql(request: Request):
     return templates.TemplateResponse("sql2.html",{"request": request,"sql":readfile.directlyread('sql.md')})
+<<<<<<< HEAD
 
 @app.get("/sendsnlist/",response_class=HTMLResponse)
 async def sendsql(request: Request):
     return templates.TemplateResponse("sn.html",{"request": request,"sql":readfile.directlyread('snlist.txt'),"filetype":"sn"})
+=======
+>>>>>>> d7688e92b1ac4fb191523e6dc289801d224e0102
