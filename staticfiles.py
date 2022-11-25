@@ -124,27 +124,57 @@ async def ck_depracated(request: Request,path:Path=None):
         print(drive,location)
     return templates.TemplateResponse("ck.html",{"request": request,"out":clickhouse.list_all_drives(location)})
 
+import urllib.parse
 @app.get("/ck/",response_class=HTMLResponse)
-async def ck(request: Request,pathstr64:str=None,drive:str=None):
-    print(drive,pathstr64)
-    location = pathstr64
-    if pathstr64 == 'popper.js.map':
+async def ck(request: Request,filenamestr64:str=None,drive:str=None,location64:str=None):
+    print(drive,location64,filenamestr64)
+
+    if filenamestr64 == 'popper.js.map':
         return
-    elif pathstr64:
+    elif filenamestr64:
         # base64 string to bytes
-        print(pathstr64)
+        print(filenamestr64)
         print('---------------------------')
-        pathbytes64= pathstr64.encode()
-        pathbytes = base64.b64decode(pathbytes64)
+        filenamebytes64= filenamestr64.encode()
+        filenamebytes = base64.b64decode(filenamebytes64)
         # finally to string
-        pathstr = pathbytes.decode('utf-8')
-        location = pathstr
-        print(location) 
+        filenamestr = urllib.parse.unquote(filenamebytes.decode('utf-8'))
+        print(filenamestr) 
+    if location64:
+        locationstr = base64.b64decode(location64.encode()).decode('utf-8')
 
-    print(clickhouse.list_all_drives(drive,location))
-    
-    return templates.TemplateResponse("ck.html",{"request": request,"drive":drive,"out":clickhouse.list_all_drives(drive,location)})
+    return templates.TemplateResponse("ck.html",
+    {"request": request,"drive":drive,"out":clickhouse.list_all_drives(drive,locationstr+'/'+filenamestr)})
 
+@app.get("/ckn/popper.js.map",response_class=HTMLResponse)
+async def popper(request:Request):
+    print("into popperrr")
+    return
+
+@app.get("/ckn/",response_class=HTMLResponse)
+async def ckn(request: Request,fullpathstr64:str=None):
+    print(fullpathstr64)
+
+    filenamestr=fullpathstr64
+
+    if filenamestr == 'popper.js.map':
+        print("popperrrrr")
+        pass
+    elif fullpathstr64:
+        # base64 string to bytes
+        print(fullpathstr64)
+        print('---------------------------')
+        filenamebytes64= fullpathstr64.encode()
+        filenamebytes = base64.b64decode(filenamebytes64)
+        # finally to string
+        filenamestr = urllib.parse.unquote(filenamebytes.decode('utf-8'))
+        print(filenamestr) 
+
+    print('am i there????')
+
+
+    return templates.TemplateResponse("ck.html",
+    {"request": request,"out":clickhouse.list_all_drives2(path=filenamestr)})
 # @app.post("/jumppath/")
 # async def jumppath(request:Request,drive: str = Form(),location:str=Form()):
 #     p = Path(drive=drive,location=location)

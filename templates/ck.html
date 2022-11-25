@@ -74,22 +74,27 @@
     {% if not out %}
         <p>Content is Null</p>
     {% else %}
-        {% if drive %}
-        <h1>On Drive: {{drive}}</h1>
+        <button id="goup">Go Up</button>
+        {% if out[0].drive %}
+        <h1>On Drive: {{out[0].drive}}</h1>
         {% else %}
         <h1>All Contents</h1>
         {% endif %}
         {% for i in out %}
             {% if i.filename %}
-            
-            <p>
-                <button class="path" style="color:rgba(0, 0, 255, 0.47);font-size:17px;margin:4px" id="{{i.filename}}&{{drive}}">{{i.filename}}</button>
-            </p>
+                {% if i.attributes  == 'D'%}
+                    <p>
+                        <button class="path" style="color:rgba(0, 0, 255);font-size:17px;margin:4px" location="{{i.location}}" drive="{{i.drive}}" id="{{i.filename}}">{{i.filename}}</button>
+                    </p>
+                {% else %}
+                    <p>
+                        <p class="path" style="color:rgba(0, 0, 0);font-size:17px;margin:4px" location="{{i.location}}" drive="{{i.drive}}" id="{{i.filename}}">{{i.filename}}</button>
+                    </p>
+                {% endif %}
             {% else %}
-            
-            <p>
-            <button class="path" style="color:rgba(0, 0, 255, 0.47);font-size:17px;margin:4px" id="{{i}}&{{i}}">{{i}}</button>
-            </p>
+                <p>
+                <button class="path" style="color:rgba(0, 0, 255, 0.47);font-size:17px;margin:4px" location="root" drive="" id="{{i}}">{{i}}</button>
+                </p>
             {% endif %}
         {% endfor %}
     {% endif %}
@@ -99,12 +104,43 @@
 <script src="{{ url_for('script', path='jquery-3.6.0.min.js') }}"></script>
 <script>
     jQuery(':button').click(function () {
-        const message = this.id.split('&')[0]
-        var encodedString = btoa(message);
-        const drive=this.id.split('&')[1]
-        alert(message+drive)
+        if(this.id === "goup"){
 
-        location.replace('http://114.132.248.40:8877/ck/?pathstr64='+encodedString+'&drive='+drive)
+            reg = /.*ckn\/?(\?fullpathstr64=)?/
+            const pathstr64=window.location.href.replace(reg,'')
+            if(pathstr64===""){
+                return
+            }
+            const pathstr = window.decodeURIComponent(atob(pathstr64))
+            reg2 = /[^\/]+\/?$/
+            const fullpath = pathstr.replace(reg2,'')
+            if(fullpath===""){
+                location.replace('http://114.132.248.40:8877/ckn')
+                return
+            }
+            location.replace('http://114.132.248.40:8877/ckn/?fullpathstr64='+btoa(fullpath))
+            return
+        }
+
+        const link_name = this.id
+        const parentfolder = $(this).attr('location')
+        const drive = $(this).attr('drive')
+
+        console.log(link_name)
+        if(drive === ""){
+            var fullpath = btoa(window.encodeURIComponent(link_name+":/"))
+        }else{
+            console.log("elsefirst")
+            if(parentfolder===""){
+                console.log("p is null")
+                var fullpath = btoa(window.encodeURIComponent(drive+":/"+link_name))
+            }else{
+                var fullpath = btoa(window.encodeURIComponent(drive+":/"+parentfolder+"/"+link_name))
+            }
+        }
+        console.log(parentfolder,fullpath)
+        location.replace('http://114.132.248.40:8877/ckn/?fullpathstr64='+fullpath)
+        
     });
 
 

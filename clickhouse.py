@@ -166,12 +166,51 @@ client = clickhouse_connect.get_client(host='aireason.tpddns.cn', username='defa
 def list_all_drives(drive=None,path=None):
     all_drives = client.command("show tables").split('\n')
     
-    if not drive or drive=='null':
+    if not drive or drive=='root':
         return all_drives
-    o = client.query(f"select filename,location,attributes from {drive} where countMatches(location,'/') = 0").result_set
-    fields = ['filename','location','attributes']
-    zipped = dict(zip(fields, o))
-    return o
+    if drive == path:
+        oo = client.query(f"select filename,location,attributes from {drive} where countMatches(location,'/') =0").result_set
+    else:
+        oo = client.query(f"select filename,location,attributes from {drive} where location='{path}'").result_set
+
+    ret = []
+    for o in oo:
+        fields = ['filename','location','attributes']
+        zipped = dict(zip(fields, o))
+        ret.append(zipped)
+    return ret
+
+def list_all_drives2(path=None):
+    print(path)
+    if path is None:
+        return client.command("show tables").split('\n')
+
+    # drive = re.search(r'.*:/',path)
+    # if drive:
+    #     drive = drive.group(0)
+
+    drive,path_r = path.split(':/',1)
+    path_r=path_r.rstrip('/')
+    # t = path_r.rsplit('/',1)
+    # if len(t)>1:
+    #     folder,file = t
+    # else:
+    #     folder = ''
+    #     file = path_r
+    
+    # print(drive,folder,file)
+
+    oo = client.query(f"select filename,location,attributes from {drive} where location='{path_r}'").result_set
+
+
+    ret = []
+    for o in oo:
+        fields = ['filename','location','attributes']
+        zipped = dict(zip(fields, o))
+        zipped['drive']=drive
+        ret.append(zipped)
+    print(ret)
+    return ret
 
 
 def use_ck():
