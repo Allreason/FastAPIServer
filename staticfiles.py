@@ -70,6 +70,9 @@ async def postform(request:Request,text: str = Form(),type:str=Form()):
     elif type=='snsubstitute':
         u = await readfile.substitute_sql('snlist.txt',text)
         return
+    elif type=='search':
+        u = await clickhouse.find_in_all_ck_tables(text)
+        return u
 
     #response=await sendsql(request)
     #return RedirectResponse('/sendsql/')
@@ -162,8 +165,7 @@ async def ckn(request: Request,fullpathstr64:str=None):
         pass
     elif fullpathstr64:
         # base64 string to bytes
-        print(fullpathstr64)
-        print('---------------------------')
+
         filenamebytes64= fullpathstr64.encode()
         filenamebytes = base64.b64decode(filenamebytes64)
         # finally to string

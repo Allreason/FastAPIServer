@@ -162,9 +162,32 @@ import clickhouse_connect
 
 client = clickhouse_connect.get_client(host='aireason.tpddns.cn', username='default', password='fighting')
 
+async def find_in_all_ck_tables(content, only_folder=False):
+    all_tables = [i for i in client.command("show tables").split('\n') if not i.endswith('copy')]
+    # sl = [re.compile(i, flags=re.IGNORECASE) for i in content.split(' ') if i]
+    sl = '[' + ','.join([f"'{i}'" for i in content.split(' ') if i]) + ']'
+    print(sl)
+    all = {}
+    for t in all_tables:
+        accessory = ''
+        if only_folder:
+            accessory = "and attributes='D'"
+        founded = client.query(f"select filename,location,dm,'{t}' from {t} where has(multiSearchAllPositionsCaseInsensitiveUTF8(filename,{sl}),0)=0 {accessory} limit 100")
+        if founded.result_set:
+            all[t]=founded.result_set
+    return all
+        # if founded.result_set:
+        #     print(f'\n--------start--------\n【{t}】 table has what you want:')
+        #     for i in founded.result_set:
+        #         print(i)
+        #     print('--------end--------')
+
+def search(text:str=None):
+    return find_in_all_ck_tables(text)
 
 def list_all_drives(drive=None,path=None):
-    all_drives = client.command("show tables").split('\n')
+    all_drives = [i for i in client.command("show tables").split('\n') if i.endswith('copy')]
+    
     
     if not drive or drive=='root':
         return all_drives
@@ -183,7 +206,7 @@ def list_all_drives(drive=None,path=None):
 def list_all_drives2(path=None):
     print(path)
     if path is None:
-        return client.command("show tables").split('\n')
+        return [i for i in client.command("show tables").split('\n') if not i.endswith('copy')]
 
     # drive = re.search(r'.*:/',path)
     # if drive:
@@ -199,8 +222,11 @@ def list_all_drives2(path=None):
     #     file = path_r
     
     # print(drive,folder,file)
-
-    oo = client.query(f"select filename,location,attributes from {drive} where location='{path_r}'").result_set
+    if "'" in path_r or '"' in path_r:
+        np = re.sub("'|\"","%",path_r)
+        oo = client.query(f"select filename,location,attributes from {drive} where location like '{np}'").result_set
+    else:
+        oo = client.query(f"select filename,location,attributes from {drive} where location='{path_r}'").result_set
 
 
     ret = []
@@ -209,7 +235,6 @@ def list_all_drives2(path=None):
         zipped = dict(zip(fields, o))
         zipped['drive']=drive
         ret.append(zipped)
-    print(ret)
     return ret
 
 
@@ -259,7 +284,7 @@ def use_ck():
     # client.insert('wd_4t', data)
 
 
-def find_in_all_ck_tables(content, only_folder=False):
+def find_in_all_ck_tables2(content, only_folder=False):
     all_tables = client.command('show tables').split('\n')
     # sl = [re.compile(i, flags=re.IGNORECASE) for i in content.split(' ') if i]
     sl = '[' + ','.join([f"'{i}'" for i in content.split(' ') if i]) + ']'
